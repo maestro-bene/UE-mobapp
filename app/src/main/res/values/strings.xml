@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">MyFirstApplication</string>
+    <string name="title_activity_second">SecondActivity</string>
+    <string name="prompt_password">Enter your Password</string>
+    <string name="prompt_surname">Enter your family name:</string>
+    <string name="prompt_birth_date">Select your birth date:</string>
+    <string name="prompt_city">Enter the city you live in:</string>
+    <string name="prompt_name">Enter your name:</string>
+    <string name="prompt_department">Select the department you were born in:</string>
+    <string name="surname_hint">Derrien</string>
+    <string name="birth_date_hint">01/12/1993</string>
+    <string name="city_hint">Tokyo</string>
+    <string name="name_hint">Thomas</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="information_menu">"User information Form:"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="hello_text">HelloWorld</string>
+    <string name="validated">Information set successfully</string>
+    <string name="validate">Validate information</string>
+    <string name="prompt_email">Email</string>
+    <string name="reset_action">Reset</string>
+    <string name="add_phone_number">Add a phone number</string>
+    <string name="phone_number_hint">Phone number</string>
+</resources>
