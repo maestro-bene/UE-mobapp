@@ -23,6 +23,15 @@
     <string name="validate">Validate information</string>
     <string name="prompt_email">Email</string>
     <string name="reset_action">Reset</string>
+    <string name="search_wikipedia_city_action">Search your City\'s Wikipedia page</string>
+    <string name="share_city_action">Share your City</string>
     <string name="add_phone_number">Add a phone number</string>
     <string name="phone_number_hint">Phone number</string>
+    <string name="close_text">Close</string>
+    <string name="phone_numbers_title">Phone Numbers:</string>
+    <string name="department_title">Department:</string>
+    <string name="city_title">City:</string>
+    <string name="birth_date_title">Birth Date:</string>
+    <string name="name_title">Name:</string>
+    <string name="surname_title">Surname:</string>
 </resources>

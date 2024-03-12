@@ -4,4 +4,13 @@
         android:id="@+id/resetAction"
         android:title="@string/reset_action"
         android:onClick="resetAction"/>
+    <item
+        android:id="@+id/searchWikiCityAction"
+        android:title="@string/search_wikipedia_city_action"
+        android:onClick="searchWikiCityAction"/>
+
+    <item
+        android:id="@+id/shareCityAction"
+        android:title="@string/share_city_action"
+        android:onClick="shareCityAction"/>
 </menu>

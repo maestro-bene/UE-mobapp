@@ -1,11 +1,13 @@
 package fr.imt_atlantique.myfirstapplication;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.icu.util.Calendar;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.InputType;
@@ -15,14 +17,19 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 
@@ -32,22 +39,110 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText birthDateEditText;
     private LinearLayout phoneNumbersContainer;
 
-    private final Map<Integer, EditText> phoneNumberEditTexts = new HashMap<>();
+    private Map<Integer, EditText> phoneNumberEditTexts = new HashMap<>();
     private int phoneNumberEditTextNextId = 1;
+
+    private SharedPreferences sharedPreferences;
+
+    private EditText surnameEditText;
+    private EditText nameEditText;
+    private Spinner departmentSpinner;
+    private EditText birthDateEditText;
+    private EditText cityEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("Lifecycle", "onCreate method");
         setContentView(R.layout.activity_main);
+
+        surnameEditText = findViewById(R.id.surname);
+        nameEditText = findViewById(R.id.name);
         birthDateEditText = findViewById(R.id.birth_date);
-        birthDateEditText.setOnClickListener(view -> showDatePickerDialog());
+        cityEditText = findViewById(R.id.city);
+        departmentSpinner = findViewById(R.id.department);
         phoneNumbersContainer = findViewById(R.id.phone_numbers_container);
-        addPhoneNumberField(phoneNumbersContainer);
+
+        birthDateEditText.setOnClickListener(view -> showDatePickerDialog());
+
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+
+        Log.d("SharedPreferences", "SharedPreferences object: " + sharedPreferences);
+
+        // Restore state from savedInstanceState Bundle if available
+        if (savedInstanceState != null) {
+            // Restore the state of phone number fields
+            for (Map.Entry<Integer, EditText> entry : phoneNumberEditTexts.entrySet()) {
+                int viewId = entry.getKey();
+                EditText editText = entry.getValue();
+                String phoneNumber = savedInstanceState.getString("phoneNumber" + viewId);
+                if (phoneNumber != null) {
+                    editText.setText(phoneNumber);
+                }
+            }
+            // Restore the number of phone number fields
+            int numPhoneNumbers = savedInstanceState.getInt("numPhoneNumbers", 0);
+            // Add additional phone number fields if needed
+            for (int i = phoneNumberEditTextNextId; i <= numPhoneNumbers; i++) {
+                addPhoneNumberField(phoneNumbersContainer);
+                EditText editText = phoneNumberEditTexts.get(i);
+                String phoneNumber = savedInstanceState.getString("phoneNumber" + i);
+                if (editText != null && phoneNumber != null) {
+                    editText.setText(phoneNumber);
+                }
+            }
+
+        }
+        // Load data from SharedPreferences and fill in the EditText fields
+        loadUserData();
     }
+
+    // Method to load user data from SharedPreferences and fill in EditText fields
+    private void loadUserData() {
+
+        // Clear any existing phone number fields
+        phoneNumbersContainer.removeAllViews();
+        phoneNumberEditTexts.clear();
+
+        surnameEditText.setText(sharedPreferences.getString("surname", ""));
+        nameEditText.setText(sharedPreferences.getString("name", ""));
+        birthDateEditText.setText(sharedPreferences.getString("birthDate", ""));
+        cityEditText.setText(sharedPreferences.getString("city", ""));
+        //  department from SharedPreferences
+        String department = sharedPreferences.getString("department", "");
+        if (!department.isEmpty()) {
+            // Find the position of the department in the spinner's array
+            int position = ((ArrayAdapter<String>) departmentSpinner.getAdapter()).getPosition(department);
+            if (position != -1) {
+                departmentSpinner.setSelection(position);
+            }
+        }
+
+        // Retrieve the JSON string from SharedPreferences
+        String json = sharedPreferences.getString("phoneNumbers", "");
+
+        Log.d("SharedPreferences", "Retrieved JSON string: " + json);
+        // Create a new map to store EditTexts
+        phoneNumberEditTexts = new HashMap<>();
+
+        // If the JSON string is not empty, parse it and add EditTexts to the map
+        if (!json.isEmpty()) {
+            try {
+                JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+                for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+                    Integer key = Integer.parseInt(entry.getKey());
+                    String phoneNumber = entry.getValue().getAsString();
+                    addPhoneNumberFieldWithText(phoneNumbersContainer, phoneNumber); // Add EditText with pre-filled phone number
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     @Override
     protected void onPause() {
@@ -56,25 +151,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save the state of phone number fields
-        ArrayList<String> phoneNumbers = new ArrayList<>();
         for (Map.Entry<Integer, EditText> entry : phoneNumberEditTexts.entrySet()) {
             int viewId = entry.getKey();
             EditText editText = entry.getValue();
-            phoneNumbers.add(editText.getText().toString());
+            outState.putString("phoneNumber" + viewId, editText.getText().toString());
         }
-        outState.putStringArrayList("phoneNumbers", phoneNumbers);
+        // Save the number of phone number fields
+        outState.putInt("numPhoneNumbers", phoneNumberEditTexts.size());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore the state of phone number fields
+        for (Map.Entry<Integer, EditText> entry : phoneNumberEditTexts.entrySet()) {
+            int viewId = entry.getKey();
+            EditText editText = entry.getValue();
+            String phoneNumber = savedInstanceState.getString("phoneNumber" + viewId);
+            if (phoneNumber != null) {
+                editText.setText(phoneNumber);
+            }
+        }
     }
 
     public void validateAction(View view) {
-        // Get references to the EditTexts
-        EditText surnameEditText = findViewById(R.id.surname);
-        EditText nameEditText = findViewById(R.id.name);
-        EditText birthDateEditText = findViewById(R.id.birth_date);
-        EditText cityEditText = findViewById(R.id.city);
-        Spinner departmentSpinner = findViewById(R.id.department);
 
         // Get the text from the EditTexts
         String surname = surnameEditText.getText().toString();
@@ -95,15 +198,19 @@ public class MainActivity extends AppCompatActivity {
             return; // Exit the method without proceeding further
         }
 
-        // Create the text to display in the Snackbar
-        StringBuilder textToShowBuilder = new StringBuilder();
-        textToShowBuilder.append("Surname: ").append(surname).append(",\n")
-                .append("Name: ").append(name).append(",\n")
-                .append("Birth Date: ").append(birthDate).append(",\n")
-                .append("City: ").append(city).append("\n")
-                .append("Departement: ").append(department).append("\n");
+        // Save user data in SharedPreferences
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("surname", surname);
+        editor.putString("name", name);
+        editor.putString("birthDate", birthDate);
+        editor.putString("city", city);
+        editor.putString("department", department);
 
-        // Append phone numbers
+        // Create an array to store phone numbers for the User class
+        ArrayList<String> phoneNumbersList = new ArrayList<>();
+
+        // Append phone numbers to StringBuilder and add them to the array list
+        StringBuilder phoneNumbersBuilder = new StringBuilder();
         for (Map.Entry<Integer, EditText> entry : phoneNumberEditTexts.entrySet()) {
             int id = entry.getKey();
             EditText editText = entry.getValue();
@@ -116,22 +223,56 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Phone number " + id + " is not valid", Toast.LENGTH_SHORT).show();
                 return;
             }
-            textToShowBuilder.append("Phone ").append(id).append(": ").append(phoneNumber).append("\n");
+            phoneNumbersBuilder.append(phoneNumber);
+            phoneNumbersList.add(phoneNumber);
         }
 
+        // Save the JSON string to SharedPreferences
+        String json = serializeMap(phoneNumberEditTexts);
+        editor.putString("phoneNumbers", json);
 
-        // Create an AlertDialog builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.GreenAlertDialogTheme);
-        builder.setTitle("Information validated:");
-        builder.setMessage(textToShowBuilder.toString());
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            // Dismiss the dialog
-            dialog.dismiss();
-        });
+        // Apply to preferences
+        editor.apply();
 
-        // Show the AlertDialog
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        Log.d("SharedPreferences", "Data saved to SharedPreferences");
+
+        // Convert the array list to an array of strings
+        String[] phoneNumbersArray = phoneNumbersList.toArray(new String[0]);
+
+        // Create user object
+        User user = new User(surname, name, birthDate, city, department, phoneNumbersArray);
+
+        // Create Intent to start DisplayActivity
+        Intent intent = new Intent(this, DisplayActivity.class);
+        // Add user object to Intent
+        intent.putExtra("user", user);
+        // Start DisplayActivity
+        startActivity(intent);
+    }
+
+    // Custom method to serialize the map to JSON
+    private String serializeMap(Map<Integer, EditText> map) {
+        JsonObject jsonObject = new JsonObject();
+        for (Map.Entry<Integer, EditText> entry : map.entrySet()) {
+            Integer key = entry.getKey();
+            EditText editText = entry.getValue();
+            // Extract relevant data from EditText and add to JsonObject
+            jsonObject.addProperty(key.toString(), editText.getText().toString());
+        }
+        return jsonObject.toString();
+    }
+
+    public void addPhoneNumberFieldWithText(View view, String phoneNumber) {
+        // Call addPhoneNumberField method and pass the view
+        addPhoneNumberField(view);
+
+        // Retrieve the EditText corresponding to the newly added phone number field
+        EditText editText = phoneNumberEditTexts.get(phoneNumberEditTextNextId - 1);
+
+        // Set the provided phone number to the EditText
+        if (editText != null) {
+            editText.setText(phoneNumber);
+        }
     }
 
     private boolean isValidPhoneNumber(String phoneNumber) {
@@ -164,6 +305,15 @@ public class MainActivity extends AppCompatActivity {
         nameEditText.setText("");
         birthDateEditText.setText("");
         cityEditText.setText("");
+
+        // Clear phone number fields
+        phoneNumbersContainer.removeAllViews();
+        phoneNumberEditTexts.clear();
+
+        // Clear shared preferences
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
     }
 
     private void showDatePickerDialog() {
@@ -229,6 +379,52 @@ public class MainActivity extends AppCompatActivity {
 
         // Add the layout to the container
         phoneNumbersContainer.addView(layout);
+    }
+
+
+    public void searchWikiCityAction(MenuItem item) {
+        // Retrieve city name from the EditText field
+        String cityName = cityEditText.getText().toString();
+        // Check if the city name is not empty
+        if (!cityName.isEmpty()) {
+            // Construct the search URL
+            String url = "http://fr.wikipedia.org/?search=" + Uri.encode(cityName);
+            // Create an Intent to view the URL
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+
+            // Verify that the Intent can be resolved to an Activity
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            } else {
+                // No Activity found that can handle the Intent
+                Toast.makeText(this, "No application found to open Wikipedia", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Please enter a city name", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void shareCityAction(MenuItem item) {
+        // Retrieve city name from the EditText field
+        String cityName = cityEditText.getText().toString();
+
+        // Check if the city name is not empty
+        if (!cityName.isEmpty()) {
+            // Create the text to share
+            String shareText = "Check out this city: " + cityName + "!";
+
+            // Create a SHARE Intent
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "City Information");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+
+            // Start the chooser Intent
+            startActivity(Intent.createChooser(shareIntent, "Share city via"));
+        } else {
+            Toast.makeText(this, "City name is empty. Please enter a city name to share.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
