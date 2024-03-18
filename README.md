@@ -19,11 +19,11 @@ Throughout this course, I've tackled:
 ## Tools & Technologies 🛠️
 
 This course has me working with:
-- **OS**: MacOS Sonoma 14.3
-- **Shell**: Fish 3.7.0
+- **OS**: MacOS
+- **Shell**: Fish
 - **Terminal**: kitty
 - **Terminal multiplexer**: tmux
-- **IDE**: Nvim v0.9.5
+- **IDE**: Nvim
 - **Android Studio**: The heart of Android development, providing the IDE and tools needed to build apps.
 - **Java**: The primary language for Android app development, offering a robust tool kit for object-oriented programming.
 - **Git**: For version control, ensuring that every step of my development process is tracked and managed.
