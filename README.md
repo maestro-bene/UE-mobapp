@@ -14,11 +14,15 @@ Throughout this course, I've tackled:
 
 ## Projects and Exercises 🚀
 
-
+- **MyFirstApplication**: The end project, using all the different notions we discovered through this UE.
+- **MyBasicCounterApplication**: A basic exercise to manipulate Shared Preferences.
+- **MyIntentApplication**: A basic exercise to manipulate intents and launching activities.
+- **MyFragmentApplication**: An exercise to manipulate fragments.
 
 ## Tools & Technologies 🛠️
 
 This course has me working with:
+
 - **OS**: MacOS
 - **Shell**: Fish
 - **Terminal**: kitty
@@ -28,14 +32,14 @@ This course has me working with:
 - **Java**: The primary language for Android app development, offering a robust tool kit for object-oriented programming.
 - **Git**: For version control, ensuring that every step of my development process is tracked and managed.
 
-
 ## Learning Objectives 🎯
 
 Here's what I'm set to achieve:
+
 - **Hands-on Development**: Building applications that respond to the unique demands of mobile computing.
 - **Data Management**: Implementing persistent data storage to keep the user's data safe.
 - **Sensor Utilization**: Bringing applications to life by integrating the device's hardware capabilities.
-- **Mapping and Location Services**: Enhancing user experience with geolocation and custom maps.
+- **Mapping and Location Services**: Enhancing user experience with geolocation and custom maps. (I actually chose the Data Management, and didn't got to discover maps unfortunately)
 
 ## Prerequisites ✅
 
