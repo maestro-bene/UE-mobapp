@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MonApplicationFragment</string>
+    <string name="edit_hint">Entrez votre nom</string>
+    <string name="submit_button">Soumettre</string>
+</resources>

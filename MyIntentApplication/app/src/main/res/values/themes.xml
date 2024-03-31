@@ -1,0 +1,23 @@
+<resources>
+    <!-- Base application theme, adhering to Material 3 guidelines. -->
+    <style name="Base.Theme.MyIntentApplication" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary color used by the application -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
+        <!-- Secondary color used by the application -->
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorControlActivated">@color/primaryColor</item>
+
+        <!-- Status bar color customization -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
+
+        <!-- Customize other attributes as needed -->
+    </style>
+
+    <!-- Specific theme customizations for Light/Dark themes could be defined in night/resource directories -->
+    <!-- Theme.MyIntentApplication extends from Base.Theme.MyIntentApplication for further customization or specific activity theming -->
+    <style name="Theme.MyIntentApplication" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Activity specific theme customizations -->
+    </style>
+</resources>

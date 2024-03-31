@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MyIntentApplication</string>
+    <string name="enter_your_question">Enter your question</string>
+    <string name="enter_your_answer">Answer the question :</string>
+    <string name="question_hint">How old is Vicente Amigo ?</string>
+    <string name="answer_hint">He is 56 years old</string>
+    <string name="ask_question">ASK QUESTION</string>
+    <string name="submit_answer">SUBMIT ANSWER</string>
+</resources>

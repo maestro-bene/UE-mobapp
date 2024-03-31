@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyFragmentApplication</string>
+    <string name="edit_hint">Enter your name</string>
+    <string name="submit_button">Submit</string>
+</resources>

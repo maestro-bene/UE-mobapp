@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MyBasicCounterApplication</string>
+    <string name="counterText">My basic counter currently sits at:</string>
+    <string name="counter">0</string>
+</resources>
