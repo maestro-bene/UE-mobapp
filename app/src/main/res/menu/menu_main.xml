@@ -2,15 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/resetAction"
-        android:title="@string/reset_action"
-        android:onClick="resetAction"/>
+        android:title="@string/reset_action" />
     <item
         android:id="@+id/searchWikiCityAction"
-        android:title="@string/search_wikipedia_city_action"
-        android:onClick="searchWikiCityAction"/>
+        android:title="@string/search_wikipedia_city_action" />
 
     <item
         android:id="@+id/shareCityAction"
-        android:title="@string/share_city_action"
-        android:onClick="shareCityAction"/>
+        android:title="@string/share_city_action" />
 </menu>
